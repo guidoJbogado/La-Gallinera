@@ -1,0 +1,893 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Gallinera | Juego de cartas</title>
+
+<style>
+:root {
+  --bg: #101713;
+  --panel: #1b2920;
+  --green: #315c3d;
+  --gold: #e5c477;
+  --text: #f4f1e8;
+  --muted: #b6c0b5;
+  --red: #b74d42;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, serif;
+  line-height: 1.7;
+}
+
+header {
+  min-height: 390px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 50px 20px;
+  background:
+    radial-gradient(ellipse at center, #315c3d 0%, #17251b 65%, #101713 100%);
+  border-bottom: 3px solid var(--gold);
+}
+
+header h1 {
+  font-size: clamp(3rem, 9vw, 6rem);
+  color: var(--gold);
+  letter-spacing: 5px;
+  line-height: 1.2;
+}
+
+header p {
+  font-size: 1.2rem;
+  color: var(--text);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+header .subtitle {
+  margin-top: 25px;
+  padding: 10px 25px;
+  border: 1px solid var(--gold);
+  border-radius: 30px;
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #18241c;
+  border-bottom: 1px solid #526451;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 12px;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 13px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+nav a:hover {
+  background: var(--green);
+  color: var(--gold);
+}
+
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 25px 18px 70px;
+}
+
+section {
+  padding: 45px 0;
+  border-bottom: 1px solid #354438;
+  scroll-margin-top: 75px;
+}
+
+h2 {
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin: 25px 0 12px;
+}
+
+p {
+  margin-bottom: 13px;
+}
+
+ul, ol {
+  padding-left: 25px;
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 7px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.stat, .panel {
+  background: var(--panel);
+  border: 1px solid #405344;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 2.3rem;
+  color: var(--gold);
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.notice {
+  background: #283a2c;
+  border-left: 4px solid var(--gold);
+  padding: 18px;
+  margin: 20px 0;
+  border-radius: 5px;
+}
+
+.danger {
+  border-left-color: var(--red);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 13px;
+  text-align: left;
+  border-bottom: 1px solid #405344;
+}
+
+th {
+  color: var(--gold);
+  background: #26392b;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.playing-card {
+  background: #f4f1e8;
+  color: #202820;
+  min-height: 145px;
+  border-radius: 9px;
+  padding: 15px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 2px solid var(--gold);
+}
+
+.playing-card .number {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.playing-card .suit {
+  font-size: 0.85rem;
+}
+
+.playing-card .value {
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.red {
+  color: #b52f32;
+}
+
+.gallinera-box {
+  background: linear-gradient(135deg, #315c3d, #1b2920);
+  border: 2px solid var(--gold);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 25px 0;
+  text-align: center;
+}
+
+.gallinera-box h3 {
+  font-size: 2rem;
+  margin: 5px;
+}
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.point {
+  background: var(--panel);
+  padding: 18px;
+  border-radius: 9px;
+  text-align: center;
+  border: 1px solid #405344;
+}
+
+.point strong {
+  display: block;
+  color: var(--gold);
+  font-size: 1.7rem;
+}
+
+details {
+  background: var(--panel);
+  border: 1px solid #405344;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 12px 0;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  background: #18241c;
+  border-top: 2px solid var(--gold);
+  color: var(--muted);
+}
+
+footer strong {
+  display: block;
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+.scoreboard {
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.score-players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.player {
+  text-align: center;
+  padding: 15px;
+  background: #26392b;
+  border-radius: 8px;
+}
+
+.score {
+  font-size: 3rem;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+button {
+  border: none;
+  padding: 9px 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--green);
+  color: white;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #477c50;
+}
+
+.reset {
+  background: var(--red);
+  margin-top: 15px;
+}
+
+.winner {
+  color: var(--gold);
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  nav {
+    gap: 0;
+  }
+
+  nav a {
+    font-size: 0.78rem;
+    padding: 7px;
+  }
+
+  th, td {
+    padding: 9px 6px;
+    font-size: 0.88rem;
+  }
+
+  header {
+    min-height: 300px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>LA GALLINERA</h1>
+  <p>El truco de los ochos y los nueves.</p>
+  <div class="subtitle">
+    1 CONTRA 1 · 10 CARTAS · 10 PUNTOS
+  </div>
+</header>
+
+<nav>
+  <a href="#inicio">Inicio</a>
+  <a href="#mazo">El mazo</a>
+  <a href="#jerarquia">Jerarquía</a>
+  <a href="#reparto">Reparto</a>
+  <a href="#juego">Cómo jugar</a>
+  <a href="#cantos">Cantos</a>
+  <a href="#gallinera">Gallinera</a>
+  <a href="#puntos">Puntuación</a>
+  <a href="#marcador">Marcador</a>
+</nav>
+
+<main>
+
+<section id="inicio">
+  <h2>1. ¿Qué es La Gallinera?</h2>
+
+  <p>
+    La Gallinera es un juego de cartas inspirado en
+    el truco argentino tradicional.
+  </p>
+
+  <p>
+    Participan dos jugadores, uno contra uno.
+    El objetivo es llegar a los 10 puntos antes
+    que el contrincante.
+  </p>
+
+  <div class="stats">
+    <div class="stat">
+      <strong>2</strong>
+      <span>Jugadores</span>
+    </div>
+    <div class="stat">
+      <strong>10</strong>
+      <span>Cartas en el mazo</span>
+    </div>
+    <div class="stat">
+      <strong>10</strong>
+      <span>Puntos para ganar</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>Importante:</strong> La Gallinera se juega
+    exclusivamente mano a mano. No existe la modalidad
+    de cuatro jugadores.
+  </div>
+</section>
+
+<section id="mazo">
+  <h2>2. El mazo</h2>
+
+  <p>Se utiliza un mazo español modificado con diez cartas:</p>
+
+  <ul>
+    <li>Cuatro ochos: uno de cada palo.</li>
+    <li>Cuatro nueves: uno de cada palo.</li>
+    <li>Un comodín verdadero.</li>
+    <li>Un comodín trucho.</li>
+  </ul>
+
+  <h3>Los ochos</h3>
+  <div class="cards">
+    <div class="playing-card">
+      <span class="number">8 ♠</span>
+      <span class="suit">Espada</span>
+      <span class="value">Valor 9</span>
+    </div>
+    <div class="playing-card">
+      <span class="number">8 ♦</span>
+      <span class="suit">Oro</span>
+      <span class="value">Valor 6</span>
+    </div>
+    <div class="playing-card">
+      <span class="number red">8 ♥</span>
+      <span class="suit">Copa</span>
+      <span class="value">Valor 2</span>
+    </div>
+    <div class="playing-card">
+      <span class="number">8 ♣</span>
+      <span class="suit">Basto</span>
+      <span class="value">Valor 2</span>
+    </div>
+  </div>
+
+  <h3>Los nueves</h3>
+  <div class="cards">
+    <div class="playing-card">
+      <span class="number">9 ♠</span>
+      <span class="suit">Espada</span>
+      <span class="value">Valor 3</span>
+    </div>
+    <div class="playing-card">
+      <span class="number">9 ♦</span>
+      <span class="suit">Oro</span>
+      <span class="value">Valor 4</span>
+    </div>
+    <div class="playing-card">
+      <span class="number red">9 ♥</span>
+      <span class="suit">Copa</span>
+      <span class="value">Valor 5</span>
+    </div>
+    <div class="playing-card">
+      <span class="number">9 ♣</span>
+      <span class="suit">Basto</span>
+      <span class="value">Valor 3</span>
+    </div>
+  </div>
+
+  <h3>Los comodines</h3>
+  <div class="cards">
+    <div class="playing-card">
+      <span class="number">★</span>
+      <span class="suit">Comodín verdadero</span>
+      <span class="value">Valor 10</span>
+    </div>
+    <div class="playing-card">
+      <span class="number red">★</span>
+      <span class="suit">Comodín trucho</span>
+      <span class="value">Valor 0</span>
+    </div>
+  </div>
+</section>
+
+<section id="jerarquia">
+  <h2>3. Jerarquía de las cartas</h2>
+
+  <p>
+    Las cartas tienen diferentes niveles de fuerza.
+    La siguiente tabla está ordenada de mayor a menor.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Carta</th>
+        <th>Puesto</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Comodín verdadero</td><td>1.º</td><td>10</td></tr>
+      <tr><td>8 de espada</td><td>2.º</td><td>9</td></tr>
+      <tr><td>8 de oro</td><td>3.º</td><td>6</td></tr>
+      <tr><td>9 de copa</td><td>4.º</td><td>5</td></tr>
+      <tr><td>9 de oro</td><td>5.º</td><td>4</td></tr>
+      <tr><td>9 de espada</td><td>6.º</td><td>3</td></tr>
+      <tr><td>9 de basto</td><td>6.º</td><td>3</td></tr>
+      <tr><td>8 de copa</td><td>7.º</td><td>2</td></tr>
+      <tr><td>8 de basto</td><td>7.º</td><td>2</td></tr>
+      <tr><td>Comodín trucho</td><td>8.º</td><td>0</td></tr>
+    </tbody>
+  </table>
+
+  <div class="notice">
+    <strong>Dos empates importantes:</strong>
+    <ul>
+      <li>El 9 de espada y el 9 de basto valen exactamente lo mismo: 3.</li>
+      <li>El 8 de copa y el 8 de basto valen exactamente lo mismo: 2.</li>
+    </ul>
+  </div>
+
+  <p>
+    El comodín verdadero es la carta más fuerte.
+    El comodín trucho es la carta más débil.
+    Ninguno tiene habilidades adicionales.
+  </p>
+</section>
+
+<section id="reparto">
+  <h2>4. El reparto</h2>
+
+  <ol>
+    <li>Se mezclan las diez cartas.</li>
+    <li>El jugador que reparte entrega tres cartas a cada uno.</li>
+    <li>El jugador que no repartió comienza la mano.</li>
+    <li>En la siguiente mano se intercambian los papeles.</li>
+  </ol>
+
+  <p>
+    El jugador que comienza se llama mano.
+    El que reparte se llama pie.
+  </p>
+
+  <p>
+    Las cuatro cartas restantes quedan fuera de la mano.
+    Al terminar, se vuelve a mezclar el mazo completo.
+  </p>
+</section>
+
+<section id="juego">
+  <h2>5. Cómo se juega</h2>
+
+  <p>
+    Cada mano tiene hasta tres rondas o bazas.
+    En cada una, ambos jugadores juegan una carta.
+  </p>
+
+  <ol>
+    <li>El jugador mano juega una carta.</li>
+    <li>El jugador pie juega una carta.</li>
+    <li>Se comparan sus valores.</li>
+    <li>La carta más fuerte gana la ronda.</li>
+  </ol>
+
+  <p>
+    El objetivo es ganar dos de las tres rondas.
+  </p>
+
+  <h3>Reglas de empate</h3>
+
+  <ul>
+    <li>Si cada jugador gana una de las primeras dos rondas, decide la tercera.</li>
+    <li>Si uno gana la primera y la segunda empata, gana quien ganó la primera.</li>
+    <li>Si la primera empata, la segunda decide, salvo que también empate: en ese caso decide la tercera.</li>
+  </ul>
+
+  <p>
+    No se pueden empatar las tres rondas porque solamente
+    existen dos pares de cartas de igual valor.
+  </p>
+</section>
+
+<section id="cantos">
+  <h2>6. Los cantos</h2>
+
+  <p>
+    Se mantienen los cantos tradicionales del truco argentino.
+    Los jugadores pueden aumentar los puntos de la mano.
+  </p>
+
+  <h3>Truco</h3>
+  <p>
+    Un jugador canta Truco. El rival puede aceptar diciendo
+    «Quiero» o rechazar diciendo «No quiero».
+  </p>
+
+  <h3>Retruco</h3>
+  <p>
+    Después de aceptar el Truco, el rival puede cantar Retruco.
+  </p>
+
+  <h3>Vale cuatro</h3>
+  <p>
+    Después de aceptar el Retruco, el jugador que había
+    cantado Truco puede cantar Vale cuatro.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Canto</th>
+        <th>Si se acepta</th>
+        <th>Si se rechaza</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Truco</td><td>2 puntos</td><td>1 punto</td></tr>
+      <tr><td>Retruco</td><td>3 puntos</td><td>2 puntos</td></tr>
+      <tr><td>Vale cuatro</td><td>4 puntos</td><td>3 puntos</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="gallinera">
+  <h2>7. La Gallinera</h2>
+
+  <div class="gallinera-box">
+    <h3>¡GALLINERA!</h3>
+    <p>La combinación especial de este juego.</p>
+    <p>Reemplaza completamente al envido.</p>
+  </div>
+
+  <p>
+    Un jugador tiene Gallinera cuando recibe tres cartas
+    del mismo número:
+  </p>
+
+  <div class="points">
+    <div class="point">
+      <strong>888</strong>
+      Gallinera de ochos
+    </div>
+    <div class="point">
+      <strong>999</strong>
+      Gallinera de nueves
+    </div>
+  </div>
+
+  <h3>¿Cuándo se declara?</h3>
+
+  <p>
+    Se declara automáticamente antes de jugar la primera carta,
+    como la Flor del truco tradicional.
+  </p>
+
+  <p>
+    No se puede rechazar ni apostar en contra.
+  </p>
+
+  <h3>¿Cuántos puntos da?</h3>
+
+  <ul>
+    <li>Si solamente uno tiene Gallinera, obtiene 5 puntos.</li>
+    <li>Si ambos tienen Gallinera, gana la de ochos y obtiene 6 puntos.</li>
+  </ul>
+
+  <h3>¿Qué se dice?</h3>
+
+  <ul>
+    <li>Si el rival tiene tres nueves, dice «Tengo nueve».</li>
+    <li>Si tiene tres ochos, dice «Son buenas».</li>
+    <li>Si no tiene Gallinera, no dice nada.</li>
+  </ul>
+
+  <h3>Enfrentamientos</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Combinación</th>
+        <th>Resultado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>888 contra 999</td><td>Gana 888: 6 puntos</td></tr>
+      <tr><td>999 contra 888</td><td>Gana 888: 6 puntos</td></tr>
+    </tbody>
+  </table>
+
+  <div class="notice danger">
+    <strong>La regla absoluta:</strong>
+    ¡Nada le gana a la Gallinera!
+    <br><br>
+    Si alguien tiene Gallinera, la mano termina inmediatamente,
+    incluso si ya se había cantado Truco, Retruco o Vale cuatro.
+    <br><br>
+    Se entregan los puntos correspondientes y se comprueba
+    si alguien llegó a los 10 puntos.
+  </div>
+</section>
+
+<section id="puntos">
+  <h2>8. Puntuación y victoria</h2>
+
+  <div class="points">
+    <div class="point"><strong>5</strong>Gallinera individual</div>
+    <div class="point"><strong>6</strong>Ochos contra nueves</div>
+    <div class="point"><strong>2</strong>Truco querido</div>
+    <div class="point"><strong>3</strong>Retruco querido</div>
+    <div class="point"><strong>4</strong>Vale cuatro querido</div>
+    <div class="point"><strong>1</strong>Truco no querido</div>
+    <div class="point"><strong>2</strong>Retruco no querido</div>
+    <div class="point"><strong>3</strong>Vale cuatro no querido</div>
+  </div>
+
+  <div class="notice">
+    El primer jugador que alcance los 10 puntos gana
+    inmediatamente la partida.
+  </div>
+</section>
+
+<section id="marcador">
+  <h2>9. Marcador interactivo</h2>
+
+  <p>
+    También podés utilizar este marcador para llevar
+    la puntuación de una partida real.
+  </p>
+
+  <div class="scoreboard">
+    <div class="score-players">
+
+      <div class="player">
+        <h3>Jugador 1</h3>
+        <div class="score" id="score1">0</div>
+        <div class="buttons">
+          <button onclick="addPoints(1,1)">+1</button>
+          <button onclick="addPoints(1,2)">+2</button>
+          <button onclick="addPoints(1,3)">+3</button>
+          <button onclick="addPoints(1,4)">+4</button>
+          <button onclick="addPoints(1,5)">+5</button>
+          <button onclick="addPoints(1,6)">+6</button>
+        </div>
+      </div>
+
+      <div class="player">
+        <h3>Jugador 2</h3>
+        <div class="score" id="score2">0</div>
+        <div class="buttons">
+          <button onclick="addPoints(2,1)">+1</button>
+          <button onclick="addPoints(2,2)">+2</button>
+          <button onclick="addPoints(2,3)">+3</button>
+          <button onclick="addPoints(2,4)">+4</button>
+          <button onclick="addPoints(2,5)">+5</button>
+          <button onclick="addPoints(2,6)">+6</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="winner" id="winner"></div>
+
+    <div style="text-align:center">
+      <button class="reset" onclick="resetGame()">
+        Reiniciar partida
+      </button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>10. Resumen de las reglas</h2>
+
+  <details>
+    <summary>¿Cuántos jugadores participan?</summary>
+    Exclusivamente dos, mano a mano.
+  </details>
+
+  <details>
+    <summary>¿Cuántas cartas se reparten?</summary>
+    Tres por jugador.
+  </details>
+
+  <details>
+    <summary>¿Existe el envido?</summary>
+    No. Fue reemplazado por la Gallinera.
+  </details>
+
+  <details>
+    <summary>¿Cuánto vale una Gallinera?</summary>
+    Cinco puntos si solamente uno la tiene.
+    Seis puntos si se enfrenta una Gallinera de ochos
+    contra una de nueves.
+  </details>
+
+  <details>
+    <summary>¿Se puede rechazar la Gallinera?</summary>
+    No. Es automática.
+  </details>
+
+  <details>
+    <summary>¿Qué pasa si alguien canta Truco y el otro tiene Gallinera?</summary>
+    La Gallinera termina la mano. Tiene prioridad absoluta.
+  </details>
+
+  <details>
+    <summary>¿A cuántos puntos se juega?</summary>
+    A diez puntos.
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <strong>LA GALLINERA</strong>
+  El truco de los ochos y los nueves.
+  <p style="margin-top:15px">Reglamento oficial · Versión 2.0</p>
+  <p>Sin envido. Con Gallinera. ¡A jugar!</p>
+</footer>
+
+<script>
+let scores = [0, 0];
+
+function addPoints(player, points) {
+  if (scores[0] >= 10 || scores[1] >= 10) return;
+
+  scores[player - 1] += points;
+
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById("score1").textContent = scores[0];
+  document.getElementById("score2").textContent = scores[1];
+
+  const winner = document.getElementById("winner");
+
+  if (scores[0] >= 10) {
+    winner.textContent = "¡GANÓ EL JUGADOR 1!";
+  } else if (scores[1] >= 10) {
+    winner.textContent = "¡GANÓ EL JUGADOR 2!";
+  } else {
+    winner.textContent = "";
+  }
+}
+
+function resetGame() {
+  scores = [0, 0];
+  updateScore();
+}
+</script>
+
+</body>
+</html>
